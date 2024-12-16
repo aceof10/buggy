@@ -1,6 +1,7 @@
 {
   "name": "buggy",
   "version": "1.0.0",
+  "type": "module",
   "description": "a bug tracker API",
   "main": "index.js",
   "scripts": {

@@ -1,7 +1,7 @@
-const express = require("express");
-const bodyParser = require("body-parser");
+import express from "express";
+import bodyParser from "body-parser";
 
-const helloRoutes = require("./routes/helloRoutes");
+import helloRoutes from "./routes/helloRoutes.js";
 
 const app = express();
 
@@ -9,4 +9,4 @@ app.use(bodyParser.json());
 
 app.use("/hello", helloRoutes);
 
-module.exports = app;
+export default app;
