@@ -4,10 +4,11 @@ import db from "./models/index.js";
 
 import helloRoutes from "./routes/helloRoutes.js";
 import authRutes from "./routes/authRoutes.js";
-
+import cookieParser from "cookie-parser";
 const app = express();
 
 app.use(bodyParser.json());
+app.use(cookieParser());
 
 app.use("/hello", helloRoutes);
 app.use("/auth", authRutes);
