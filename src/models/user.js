@@ -34,5 +34,11 @@ export default (sequelize) => {
     }
   );
 
+  User.prototype.toJSON = function () {
+    const values = { ...this.get() };
+    delete values.password;
+    return values;
+  };
+
   return User;
 };
