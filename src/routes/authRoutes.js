@@ -2,7 +2,7 @@ import express from "express";
 import sanitizeInput from "../utils/sanitizeInput.js";
 import db from "../models/index.js";
 import { comparePassword, hashPassword } from "../utils/passwordHashingUtil.js";
-import { generateAccessToken, generateRefreshToken } from "../utils/jwtUtil.js";
+import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from "../utils/jwtUtil.js";
 import { authenticate } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
@@ -97,6 +97,22 @@ router.post("/logout", authenticate, async (req, res) => {
     res.status(200).json({ message: "Logged out successfully" });
   } catch (error) {
     res.status(500).json({ message: "Internal Server Error." });
+  }
+});
+
+router.post("/refresh-token", (req, res) => {
+  const refreshToken = req.cookies.refresh_token;
+
+  if (!refreshToken) {
+    return res.status(401).json({ message: "No refresh token provided." });
+  }
+
+  try {
+    const decoded = verifyRefreshToken(refreshToken);
+    const accessToken = generateAccessToken(decoded.userId);
+    res.status(200).json({ accessToken });
+  } catch (error) {
+    res.status(401).json({ message: "Internal Server Error." });
   }
 });
 
