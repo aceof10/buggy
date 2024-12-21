@@ -8,6 +8,7 @@ import { authenticate } from "./middleware/authMiddleware.js";
 import helloRoutes from "./routes/helloRoutes.js";
 import authRutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import projectRoutes from "./routes/projectRoutes.js";
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.use("/auth", authRutes);
 
 app.use(authenticate); // Apply authentication middleware to protect all routes defined below
 app.use("/users", userRoutes);
+app.use("/projects", projectRoutes);
 
 db.sequelize
   .authenticate()
