@@ -1,4 +1,5 @@
 import { Model, DataTypes } from "sequelize";
+import { ROLES_LIST, USER } from "../constants/constants.js";
 
 export default (sequelize) => {
   class User extends Model {}
@@ -21,9 +22,9 @@ export default (sequelize) => {
         allowNull: false,
       },
       role: {
-        type: DataTypes.ENUM("user", "admin", "developer", "tester"),
+        type: DataTypes.ENUM(...ROLES_LIST),
         allowNull: false,
-        defaultValue: "user",
+        defaultValue: USER,
       },
     },
     {

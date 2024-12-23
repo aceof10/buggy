@@ -2,7 +2,7 @@ import express from "express";
 import db from "../models/index.js";
 import { authorizeRole } from "../middleware/roleMiddleware.js";
 import { paginate } from "../utils/paginationUtil.js";
-import { ROLES_LIST } from "../constants/constants.js";
+import { ADMIN, ROLES_LIST } from "../constants/constants.js";
 
 const router = express.Router();
 
@@ -10,7 +10,7 @@ const router = express.Router();
  * Get users with pagination
  * Only admins can fetch all users
  */
-router.get("/", authorizeRole(["admin"]), async (req, res) => {
+router.get("/", authorizeRole([ADMIN]), async (req, res) => {
   const { page = 1, limit = 10 } = req.query;
 
   try {
@@ -52,7 +52,7 @@ router.get("/:id", async (req, res) => {
  * Change user's role
  * Only admins can change a user's role
  */
-router.patch("/:id/role", authorizeRole(["admin"]), async (req, res) => {
+router.patch("/:id/role", authorizeRole([ADMIN]), async (req, res) => {
   const { id } = req.params;
   const { role } = req.body;
 
@@ -84,7 +84,7 @@ router.patch("/:id/role", authorizeRole(["admin"]), async (req, res) => {
  * Delete user by id
  * Only admins can delete a user
  */
-router.delete("/:id", authorizeRole(["admin"]), async (req, res) => {
+router.delete("/:id", authorizeRole([ADMIN]), async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -105,7 +105,7 @@ router.delete("/:id", authorizeRole(["admin"]), async (req, res) => {
  * Get projects assigned to a user
  * Only admins can get projects assigned to a user
  */
-router.get("/:id/projects", authorizeRole(["admin"]), async (req, res) => {
+router.get("/:id/projects", authorizeRole([ADMIN]), async (req, res) => {
   const { id } = req.params;
 
   try {
