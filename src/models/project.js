@@ -15,7 +15,7 @@ export default (sequelize) => {
       displayId: {
         type: DataTypes.VIRTUAL,
         get() {
-          return `PRJ-$(this.id)`;
+          return `PRJ-${this.id}`;
         },
       },
       name: {
