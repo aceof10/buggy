@@ -2,9 +2,14 @@ import express from "express";
 import db from "../models/index.js";
 import { authorizeRole } from "../middleware/roleMiddleware.js";
 import { paginate } from "../utils/paginationUtil.js";
+import { ROLES_LIST } from "../constants/constants.js";
 
 const router = express.Router();
 
+/**
+ * Get users with pagination
+ * Only admins can fetch all users
+ */
 router.get("/", authorizeRole(["admin"]), async (req, res) => {
   const { page = 1, limit = 10 } = req.query;
 
@@ -24,11 +29,34 @@ router.get("/", authorizeRole(["admin"]), async (req, res) => {
   }
 });
 
+/**
+ * Get user by id
+ * Anyone authenticated can view a user by id
+ */
+router.get("/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const existingUser = await db.User.findByPk(id);
+    if (!existingUser) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    res.status(200).json(existingUser);
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error." });
+  }
+});
+
+/**
+ * Change user's role
+ * Only admins can change a user's role
+ */
 router.patch("/:id/role", authorizeRole(["admin"]), async (req, res) => {
   const { id } = req.params;
   const { role } = req.body;
 
-  if (!["user", "admin", "developer", "tester"].includes(role)) {
+  if (!ROLES_LIST.includes(role)) {
     return res.status(400).json({ message: "Invalid role specified." });
   }
 
@@ -37,6 +65,10 @@ router.patch("/:id/role", authorizeRole(["admin"]), async (req, res) => {
 
     if (!user) {
       return res.status(404).json({ message: "User not found." });
+    }
+
+    if (user.role === role) {
+      return res.status(304).end(); // User already has the assigned role
     }
 
     user.role = role;
@@ -48,6 +80,10 @@ router.patch("/:id/role", authorizeRole(["admin"]), async (req, res) => {
   }
 });
 
+/**
+ * Delete user by id
+ * Only admins can delete a user
+ */
 router.delete("/:id", authorizeRole(["admin"]), async (req, res) => {
   const { id } = req.params;
 
@@ -62,6 +98,31 @@ router.delete("/:id", authorizeRole(["admin"]), async (req, res) => {
     res.status(200).json({ message: "User deleted successfully." });
   } catch (error) {
     res.status(500).json({ message: "Internal Server Error." });
+  }
+});
+
+/**
+ * Get projects assigned to a user
+ * Only admins can get projects assigned to a user
+ */
+router.get("/:id/projects", authorizeRole(["admin"]), async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const user = await db.User.findByPk(id, {
+      include: {
+        model: db.Project,
+        through: { attributes: [] },
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    res.status(200).json(user.Projects);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching projects for the user." });
   }
 });
 
