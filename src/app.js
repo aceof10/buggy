@@ -15,10 +15,21 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cookieParser());
 
+/**
+ * UN-AUTHENTICATED routes. can be accessed by anyone
+ * except for specific routes within /auth
+ * (e.g., /auth/change-password) which require authentication.
+ */
 app.use("/hello", helloRoutes);
 app.use("/auth", authRutes);
 
-app.use(authenticate); // Apply authentication middleware to protect all routes defined below
+/**
+ * ! IMPORTANT
+ * AUTHENTICATED routes.
+ * routes defined after `app.use(authenticate)` will need authentication to be accessed
+ */
+app.use(authenticate);
+
 app.use("/users", userRoutes);
 app.use("/projects", projectRoutes);
 
