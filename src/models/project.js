@@ -1,4 +1,5 @@
 import { Model, DataTypes } from "sequelize";
+import { OPEN, PROJECT_STATUS_LIST } from "../constants/constants.js";
 
 export default (sequelize) => {
   class Project extends Model {}
@@ -27,9 +28,9 @@ export default (sequelize) => {
         allowNull: true,
       },
       status: {
-        type: DataTypes.ENUM("open", "closed", "in-progress"),
+        type: DataTypes.ENUM(...PROJECT_STATUS_LIST),
         allowNull: false,
-        defaultValue: "open",
+        defaultValue: OPEN,
       },
     },
     {
