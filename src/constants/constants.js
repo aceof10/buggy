@@ -31,6 +31,7 @@ export const REOPENED = "reopened";
 export const PROJECT_STATUS_LIST = [
   NEW,
   OPEN,
+  DUPLICATE,
   ON_HOLD,
   CLOSED,
   CANCELLED,
