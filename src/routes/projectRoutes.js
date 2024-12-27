@@ -212,6 +212,7 @@ router.get("/:id/users", authorizeRole([ADMIN]), async (req, res) => {
     const project = await db.Project.findByPk(id, {
       include: {
         model: db.User,
+        attributes: ["id", "email", "role"],
         through: { attributes: [] },
       },
     });
