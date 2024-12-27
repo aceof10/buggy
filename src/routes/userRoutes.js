@@ -49,6 +49,7 @@ router.get("/:id", async (req, res) => {
 });
 
 /**
+ * USER ROLE MANAGEMENT
  * Change user's role
  * Only admins can change a user's role
  */
@@ -102,6 +103,7 @@ router.delete("/:id", authorizeRole([ADMIN]), async (req, res) => {
 });
 
 /**
+ * PROJECT MANAGEMENT
  * Get projects assigned to a user
  * Only admins can get projects assigned to a user
  */
@@ -112,7 +114,8 @@ router.get("/:id/projects", authorizeRole([ADMIN]), async (req, res) => {
     const user = await db.User.findByPk(id, {
       include: {
         model: db.Project,
-        through: { attributes: [] },
+        as: "projects",
+        through: { attributes: ["assignedBy", "createdAt"] },
       },
     });
 
@@ -120,9 +123,40 @@ router.get("/:id/projects", authorizeRole([ADMIN]), async (req, res) => {
       return res.status(404).json({ message: "User not found." });
     }
 
-    res.status(200).json(user.Projects);
+    res.status(200).json(user.projects);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching projects for the user." });
+    res
+      .status(500)
+      .json({ message: "Error fetching projects assigned to the user." });
+  }
+});
+
+/**
+ * BUG MANAGEMENT
+ * Get bugs assigned to a user
+ * Only admins can get bugs assigned to a user
+ */
+router.get("/:id/bugs", authorizeRole([ADMIN]), async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const user = await db.User.findByPk(id, {
+      include: {
+        model: db.Bug,
+        as: "bugs",
+        through: { attributes: ["assignedBy", "createdAt"] },
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    res.status(200).json(user.bugs);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error fetching bugs assigned to the user." });
   }
 });
 

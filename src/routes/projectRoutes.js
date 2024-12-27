@@ -73,14 +73,14 @@ router.get(
 router.put("/:id", authorizeRole([ADMIN]), async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description } = req.body;
+    const { name, description, status } = req.body;
 
     const project = await db.Project.findOne({ where: { id } });
     if (!project) {
       return res.status(404).json({ message: "Project not found." });
     }
 
-    await project.update({ name, description });
+    await project.update({ name, description, status });
 
     res.status(200).json(project);
   } catch (error) {
@@ -140,8 +140,8 @@ router.post("/:id/add-user", authorizeRole([ADMIN]), async (req, res) => {
         .json({ message: "Cannot assign this user role to a project." });
     }
 
-    const userProjectAssociation = await db.UserProject.findOne({
-      where: { UserId: userId, ProjectId: id },
+    const userProjectAssociation = await db.UserProjectAssociation.findOne({
+      where: { userId, projectId: id },
     });
 
     if (userProjectAssociation) {
@@ -150,7 +150,12 @@ router.post("/:id/add-user", authorizeRole([ADMIN]), async (req, res) => {
         .json({ message: "User is already assigned to this project." });
     }
 
-    await db.UserProject.create({ UserId: userId, ProjectId: id });
+    const thisLoggedInUser = req.user.userId;
+    await db.UserProjectAssociation.create({
+      userId,
+      projectId: id,
+      assignedBy: thisLoggedInUser,
+    });
 
     res.status(200).json({ message: "User assigned to project successfully." });
   } catch (error) {
@@ -182,8 +187,8 @@ router.delete("/:id/remove-user", authorizeRole([ADMIN]), async (req, res) => {
       return res.status(404).json({ message: "User not found." });
     }
 
-    const userProjectAssociation = await db.UserProject.findOne({
-      where: { UserId: userId, ProjectId: id },
+    const userProjectAssociation = await db.UserProjectAssociation.findOne({
+      where: { userId, projectId: id },
     });
 
     if (!userProjectAssociation) {
@@ -212,8 +217,9 @@ router.get("/:id/users", authorizeRole([ADMIN]), async (req, res) => {
     const project = await db.Project.findByPk(id, {
       include: {
         model: db.User,
+        as: "users",
         attributes: ["id", "email", "role"],
-        through: { attributes: [] },
+        through: { attributes: ["assignedBy", "createdAt"] },
       },
     });
 
@@ -221,7 +227,7 @@ router.get("/:id/users", authorizeRole([ADMIN]), async (req, res) => {
       return res.status(404).json({ message: "Project not found." });
     }
 
-    res.status(200).json(project.Users); // Use the default alias (case-sensitive)
+    res.status(200).json(project.users);
   } catch (error) {
     res.status(500).json({ message: "Error fetching users for the project." });
   }

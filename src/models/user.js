@@ -2,7 +2,21 @@ import { Model, DataTypes } from "sequelize";
 import { ROLES_LIST, USER } from "../constants/constants.js";
 
 export default (sequelize) => {
-  class User extends Model {}
+  class User extends Model {
+    static associate(models) {
+      User.belongsToMany(models.Project, {
+        through: models.UserProjectAssociation,
+        foreignKey: "userId",
+        as: "projects",
+      });
+
+      User.belongsToMany(models.Bug, {
+        through: models.UserBugAssociation,
+        foreignKey: "userId",
+        as: "bugs",
+      });
+    }
+  }
 
   User.init(
     {

@@ -13,6 +13,12 @@ export default (sequelize) => {
         foreignKey: "projectId",
         as: "project",
       });
+
+      Bug.belongsToMany(models.User, {
+        through: models.UserBugAssociation,
+        foreignKey: "bugId",
+        as: "users",
+      });
     }
   }
 
@@ -48,16 +54,6 @@ export default (sequelize) => {
         type: DataTypes.ENUM(...PRIORITY_LIST),
         allowNull: false,
         defaultValue: MEDIUM,
-      },
-
-      // foreign key relationship fields
-      projectId: {
-        type: DataTypes.INTEGER,
-        references: {
-          model: "project",
-          key: "id",
-        },
-        allowNull: false,
       },
     },
     {

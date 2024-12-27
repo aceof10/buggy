@@ -2,7 +2,20 @@ import { Model, DataTypes } from "sequelize";
 import { OPEN, PROJECT_STATUS_LIST } from "../constants/constants.js";
 
 export default (sequelize) => {
-  class Project extends Model {}
+  class Project extends Model {
+    static associate(models) {
+      Project.hasMany(models.Bug, {
+        foreignKey: "projectId",
+        as: "bugs",
+      });
+
+      Project.belongsToMany(models.User, {
+        through: models.UserProjectAssociation,
+        foreignKey: "projectId",
+        as: "users",
+      });
+    }
+  }
 
   Project.init(
     {

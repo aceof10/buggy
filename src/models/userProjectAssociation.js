@@ -1,16 +1,16 @@
-import { Model, DataTypes } from "sequelize";
+import { DataTypes, Model } from "sequelize";
 
 export default (sequelize) => {
-  class UserBugAssociation extends Model {
+  class UserProjectAssociation extends Model {
     static associate(models) {
-      UserBugAssociation.belongsTo(models.User, {
+      UserProjectAssociation.belongsTo(models.User, {
         foreignKey: "assignedBy",
         as: "assigner",
       });
     }
   }
 
-  UserBugAssociation.init(
+  UserProjectAssociation.init(
     {
       assignedBy: {
         type: DataTypes.UUID,
@@ -19,11 +19,11 @@ export default (sequelize) => {
     },
     {
       sequelize,
-      modelName: "UserBugAssociation",
-      tableName: "user_bug_association",
+      modelName: "UserProjectAssociation",
+      tableName: "user_project_association",
       timestamps: true,
     }
   );
 
-  return UserBugAssociation;
+  return UserProjectAssociation;
 };

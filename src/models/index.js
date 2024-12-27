@@ -53,9 +53,3 @@ db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
 export default db;
-
-db.User.belongsToMany(db.Project, { through: db.UserProject });
-db.Project.belongsToMany(db.User, { through: db.UserProject });
-
-db.User.belongsToMany(db.Bug, { through: db.UserBugAssociations });
-db.Bug.belongsToMany(db.User, { through: db.UserBugAssociations });
