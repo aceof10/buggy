@@ -9,6 +9,7 @@ import helloRoutes from "./routes/helloRoutes.js";
 import authRutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import projectRoutes from "./routes/projectRoutes.js";
+import bugRoutes from "./routes/bugRoutes.js";
 
 const app = express();
 
@@ -32,6 +33,7 @@ app.use(authenticate);
 
 app.use("/users", userRoutes);
 app.use("/projects", projectRoutes);
+app.use("/bugs", bugRoutes);
 
 db.sequelize
   .authenticate()
