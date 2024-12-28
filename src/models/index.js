@@ -9,6 +9,14 @@ const env = process.env.NODE_ENV;
 const config = configFile[env];
 const db = {};
 
+let loggingOption;
+
+if (config.logging === undefined) {
+  loggingOption = true;
+} else {
+  loggingOption = config.logging === false ? false : console.log;
+}
+
 const sequelize = new Sequelize(
   config.database,
   config.username,
@@ -16,6 +24,7 @@ const sequelize = new Sequelize(
   {
     host: config.host,
     dialect: config.dialect,
+    logging: loggingOption,
   }
 );
 
