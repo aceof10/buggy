@@ -96,7 +96,7 @@ router.delete("/:id", authorizeRole([ADMIN]), async (req, res) => {
     }
 
     await user.destroy();
-    res.status(200).json({ message: "User deleted successfully." });
+    res.status(204).end();
   } catch (error) {
     res.status(500).json({ message: "Internal Server Error." });
   }
