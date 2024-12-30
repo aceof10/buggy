@@ -2,7 +2,11 @@ import express from "express";
 import sanitizeInput from "../utils/sanitizeInput.js";
 import db from "../models/index.js";
 import { comparePassword, hashPassword } from "../utils/passwordHashingUtil.js";
-import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from "../utils/jwtUtil.js";
+import {
+  generateAccessToken,
+  generateRefreshToken,
+  verifyRefreshToken,
+} from "../utils/jwtUtil.js";
 import { authenticate } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
@@ -15,11 +19,11 @@ router.post("/signup", async (req, res) => {
 
     const existingUser = await db.User.findOne({ where: { email } });
     if (existingUser) {
-      return res.status(400).json({ message: "Email already taken." });
+      return res.status(200).json({ message: "Email already taken." });
     }
 
-    let hashedPassword = await hashPassword(password);
-    let user = await db.User.create({
+    const hashedPassword = await hashPassword(password);
+    const user = await db.User.create({
       email,
       password: hashedPassword,
     });
@@ -55,6 +59,7 @@ router.post("/login", async (req, res) => {
     res.cookie("refresh_token", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
       maxAge: 30 * 24 * 60 * 60 * 1000, // valid for 30 days
     });
 
@@ -94,25 +99,37 @@ router.post("/change-password", authenticate, async (req, res) => {
 router.post("/logout", authenticate, async (req, res) => {
   try {
     res.clearCookie("refresh_token");
-    res.status(200).json({ message: "Logged out successfully" });
+    res.status(200).json({ message: "Logged out successfully." });
   } catch (error) {
     res.status(500).json({ message: "Internal Server Error." });
   }
 });
 
-router.post("/refresh-token", (req, res) => {
+router.post("/refresh-token", async (req, res) => {
   const refreshToken = req.cookies.refresh_token;
 
   if (!refreshToken) {
-    return res.status(401).json({ message: "No refresh token provided." });
+    return res
+      .status(401)
+      .json({ message: "No session found. Please log in to continue." });
   }
 
   try {
     const decoded = verifyRefreshToken(refreshToken);
-    const accessToken = generateAccessToken(decoded.userId);
+
+    const userInDb = await db.User.findByPk(decoded.userId);
+    if (!userInDb) {
+      return res.status(401).json({
+        message: "User does not exist. Please sign up or contact support.",
+      });
+    }
+
+    const accessToken = generateAccessToken(userInDb.id, userInDb.role);
     res.status(200).json({ accessToken });
   } catch (error) {
-    res.status(401).json({ message: "Internal Server Error." });
+    res
+      .status(error.status || 500)
+      .json({ message: error.message || "Internal server error." });
   }
 });
 
