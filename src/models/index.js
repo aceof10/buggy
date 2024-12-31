@@ -18,12 +18,11 @@ if (config.logging === undefined) {
 }
 
 const sequelize = new Sequelize(
-  config.database,
-  config.username,
-  config.password,
+  config.database || undefined,
+  config.username || undefined,
+  config.password || undefined,
   {
-    host: config.host,
-    dialect: config.dialect,
+    ...config,
     logging: loggingOption,
   }
 );

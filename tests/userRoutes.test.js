@@ -1,30 +1,16 @@
 import request from "supertest";
-import fs from "fs";
-import path from "path";
 import { expect } from "chai";
 import app from "../src/app.js";
 import db from "../src/models/index.js";
 
-describe("User Management Tests", () => {
+describe("/user routes tests", () => {
   let adminAccessToken;
   let adminId;
   let user1AccessToken;
-  let user1Id;
   let user2Id;
   let developerId;
 
-  // Resolve the current directory for ES modules
-  const __dirname = path.dirname(new URL(import.meta.url).pathname);
-  const backupFolder = path.join(__dirname, "test_backups");
-
-  // create backup folder if it doesn't exist
-  if (!fs.existsSync(backupFolder)) {
-    fs.mkdirSync(backupFolder);
-  }
-
   before(async () => {
-    await db.sequelize.sync({ force: true });
-
     /**
      * Sign up an admin user
      * for now system will default role to "user"
@@ -62,7 +48,6 @@ describe("User Management Tests", () => {
       password: "user1password",
     });
     expect(user1SignupRes.status).to.equal(201);
-    user1Id = user1SignupRes.body.user;
 
     // sign up user 2 (will be deleted later)
     const user2SignupRes = await request(app).post("/auth/signup").send({
@@ -96,21 +81,6 @@ describe("User Management Tests", () => {
     // expect then set developerId
     expect(developerSignupRes.status).to.equal(201);
     developerId = developerSignupRes.body.user;
-  });
-
-  after(async () => {
-    // Get the current timestamp for unique file naming
-    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-    const backupFileName = `user_routes_test_db-backup-${timestamp}.json`;
-    const filePath = path.join(backupFolder, backupFileName);
-
-    // Fetch all users and write to the file
-    const users = await db.User.findAll();
-    fs.writeFileSync(filePath, JSON.stringify(users, null, 2));
-    console.log(`Database exported to ${filePath}`);
-
-    await db.sequelize.drop(); // !IMPORTANT to avoid DROP TABLE failing due to foreign key constraints
-    await db.sequelize.close();
   });
 
   /**
