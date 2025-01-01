@@ -1,4 +1,4 @@
 node_modules
 .env
 
-/test/test_backups
+/tests/data/database
