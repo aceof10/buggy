@@ -86,7 +86,30 @@ To run the test suite, use:
 npm test
 ```
 
-Test backups are stored in the `test/test_backups` folder, organized by test suite.
+### Viewing the Test Database
+
+The test database generated during testing is an SQLite file stored in the `./tests/data/database/` directory.
+
+The filename is dynamically generated with a timestamp to avoid conflicts (e.g., test_database_2025-01-08.sqlite).
+
+**To view the test database contents:**
+
+#### 1. Locate the Database File:
+
+- Navigate to the `./tests/data/database/` directory in your project folder.
+
+#### 2. Use an SQLite Viewer:
+
+- Drag and drop the database file onto an online SQLite viewer like [SQLite Viewer by Inloop](https://inloop.github.io/sqlite-viewer/).
+- Alternatively, use a local SQLite client such as:
+  - DB Browser for SQLite.
+  - SQLite command-line tools.
+
+#### 3. Explore the Database:
+
+- Use the viewer to inspect tables, view data, or run queries.
+
+Ensure you run your tests first to populate the database with data.
 
 ## API Documentation
 
