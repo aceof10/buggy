@@ -17,7 +17,7 @@ const loginResponse = async (email, password) => {
   return res;
 };
 
-describe("Auth Routes", () => {
+describe("/auth routes tests", () => {
   describe("POST /auth/signup", () => {
     it("should create a new user and return 201", async () => {
       const res = await signupResponse("test@example.com", "Password123");
