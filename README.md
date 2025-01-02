@@ -15,6 +15,9 @@ Buggy is a RESTful API for managing projects and bugs. It allows for role-based 
 
 ```bash
 git clone https://github.com/aceof10/buggy.git
+```
+
+```bash
 cd buggy
 ```
 
