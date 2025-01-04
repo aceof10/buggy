@@ -26,7 +26,7 @@ router.post("/", authorizeRole([ADMIN]), async (req, res) => {
 
     res.status(201).json(newProject);
   } catch (error) {
-    res.status(500).json({ message: "Error creating project." });
+    res.status(500).json({ message: INTERNAL_SERVER_ERROR });
   }
 });
 
@@ -40,7 +40,7 @@ router.get("/", authorizeRole([ADMIN]), async (req, res) => {
 
     res.status(200).json(projects);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching projects." });
+    res.status(500).json({ message: INTERNAL_SERVER_ERROR });
   }
 });
 
@@ -61,7 +61,7 @@ router.get(
 
       res.status(200).json(project);
     } catch (error) {
-      res.status(500).json({ message: "Error fetching project." });
+      res.status(500).json({ message: INTERNAL_SERVER_ERROR });
     }
   }
 );
@@ -84,7 +84,7 @@ router.put("/:id", authorizeRole([ADMIN]), async (req, res) => {
 
     res.status(200).json(project);
   } catch (error) {
-    res.status(500).json({ message: "Error updating project." });
+    res.status(500).json({ message: INTERNAL_SERVER_ERROR });
   }
 });
 
@@ -105,7 +105,7 @@ router.delete("/:id", authorizeRole([ADMIN]), async (req, res) => {
 
     res.status(204).send();
   } catch (error) {
-    res.status(500).json({ message: "Error deleting project." });
+    res.status(500).json({ message: INTERNAL_SERVER_ERROR });
   }
 });
 
@@ -159,7 +159,7 @@ router.post("/:id/add-user", authorizeRole([ADMIN]), async (req, res) => {
 
     res.status(200).json({ message: "User assigned to project successfully." });
   } catch (error) {
-    res.status(500).json({ message: "Error assigning user to project." });
+    res.status(500).json({ message: INTERNAL_SERVER_ERROR });
   }
 });
 
@@ -203,7 +203,7 @@ router.delete("/:id/remove-user", authorizeRole([ADMIN]), async (req, res) => {
       .status(200)
       .json({ message: "User removed from project successfully." });
   } catch (error) {
-    res.status(500).json({ message: "Error removing user from project." });
+    res.status(500).json({ message: INTERNAL_SERVER_ERROR });
   }
 });
 
@@ -229,7 +229,7 @@ router.get("/:id/users", authorizeRole([ADMIN]), async (req, res) => {
 
     res.status(200).json(project.users);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching users for the project." });
+    res.status(500).json({ message: INTERNAL_SERVER_ERROR });
   }
 });
 

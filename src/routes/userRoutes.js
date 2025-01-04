@@ -129,9 +129,7 @@ router.get("/:id/projects", authorizeRole([ADMIN]), async (req, res) => {
 
     res.status(200).json(user.projects);
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error fetching projects assigned to the user." });
+    res.status(500).json({ message: INTERNAL_SERVER_ERROR });
   }
 });
 
@@ -158,9 +156,7 @@ router.get("/:id/bugs", authorizeRole([ADMIN]), async (req, res) => {
 
     res.status(200).json(user.bugs);
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error fetching bugs assigned to the user." });
+    res.status(500).json({ message: INTERNAL_SERVER_ERROR });
   }
 });
 

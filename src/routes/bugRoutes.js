@@ -8,6 +8,7 @@ import {
   BUG_STATUS_LIST,
   PRIORITY_LIST,
   ROLES_AUTHORIZED_FOR_PROJECT_ASSIGNMENT,
+  INTERNAL_SERVER_ERROR,
 } from "../constants/constants.js";
 import sanitizeInput from "../utils/sanitizeInput.js";
 
@@ -44,7 +45,7 @@ router.post(
 
       return res.status(201).json(bug);
     } catch (err) {
-      return res.status(500).json({ message: "Error creating bug" });
+      return res.status(500).json({ message: INTERNAL_SERVER_ERROR });
     }
   }
 );
@@ -58,7 +59,7 @@ router.get("/", authorizeRole([ADMIN, DEVELOPER, TESTER]), async (req, res) => {
 
     res.status(200).json(bugs);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching bugs." });
+    res.status(500).json({ message: INTERNAL_SERVER_ERROR });
   }
 });
 
@@ -79,7 +80,7 @@ router.get(
 
       res.status(200).json(bug);
     } catch (error) {
-      res.status(500).json({ message: "Error fetching bug." });
+      res.status(500).json({ message: INTERNAL_SERVER_ERROR });
     }
   }
 );
@@ -121,7 +122,7 @@ router.put(
 
       return res.status(200).json(bug);
     } catch (err) {
-      return res.status(500).json({ message: "Error updating bug" });
+      return res.status(500).json({ message: INTERNAL_SERVER_ERROR });
     }
   }
 );
@@ -143,7 +144,7 @@ router.delete("/:id", authorizeRole([ADMIN]), async (req, res) => {
 
     res.status(204).send();
   } catch (error) {
-    res.status(500).json({ message: "Error deleting bug." });
+    res.status(500).json({ message: INTERNAL_SERVER_ERROR });
   }
 });
 
@@ -196,7 +197,7 @@ router.post("/:id/add-user", authorizeRole([ADMIN]), async (req, res) => {
 
     res.status(200).json({ message: "User assigned to bug successfully." });
   } catch (error) {
-    res.status(500).json({ message: "Error assigning user to bug." });
+    res.status(500).json({ message: INTERNAL_SERVER_ERROR });
   }
 });
 
@@ -237,7 +238,7 @@ router.delete("/:id/remove-user", authorizeRole([ADMIN]), async (req, res) => {
 
     res.status(200).json({ message: "User removed from bug successfully." });
   } catch (error) {
-    res.status(500).json({ message: "Error removing user from bug." });
+    res.status(500).json({ message: INTERNAL_SERVER_ERROR });
   }
 });
 
@@ -266,7 +267,7 @@ router.get(
 
       res.status(200).json(bug.users);
     } catch (error) {
-      res.status(500).json({ message: "Error fetching users for the bug." });
+      res.status(500).json({ message: INTERNAL_SERVER_ERROR });
     }
   }
 );
