@@ -8,6 +8,7 @@ import {
   verifyRefreshToken,
 } from "../utils/jwtUtil.js";
 import { authenticate } from "../middleware/authMiddleware.js";
+import { INTERNAL_SERVER_ERROR } from "../constants/constants.js";
 
 const router = express.Router();
 
@@ -30,7 +31,7 @@ router.post("/signup", async (req, res) => {
 
     res.status(201).json({ user: user.id, email: user.email });
   } catch (error) {
-    res.status(500).json({ message: "Internal Server Error." });
+    res.status(500).json({ message: INTERNAL_SERVER_ERROR });
   }
 });
 
@@ -65,7 +66,7 @@ router.post("/login", async (req, res) => {
 
     res.status(200).json({ accessToken });
   } catch (error) {
-    res.status(500).json({ message: "Internal Server Error." });
+    res.status(500).json({ message: INTERNAL_SERVER_ERROR });
   }
 });
 
@@ -92,7 +93,7 @@ router.post("/change-password", authenticate, async (req, res) => {
 
     res.status(200).json({ message: "Password changed successfully." });
   } catch (error) {
-    res.status(500).json({ message: "Internal Server Error." });
+    res.status(500).json({ message: INTERNAL_SERVER_ERROR });
   }
 });
 
@@ -101,7 +102,7 @@ router.post("/logout", authenticate, async (req, res) => {
     res.clearCookie("refresh_token");
     res.status(200).json({ message: "Logged out successfully." });
   } catch (error) {
-    res.status(500).json({ message: "Internal Server Error." });
+    res.status(500).json({ message: INTERNAL_SERVER_ERROR });
   }
 });
 
@@ -129,7 +130,7 @@ router.post("/refresh-token", async (req, res) => {
   } catch (error) {
     res
       .status(error.status || 500)
-      .json({ message: error.message || "Internal server error." });
+      .json({ message: error.message || INTERNAL_SERVER_ERROR });
   }
 });
 

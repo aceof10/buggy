@@ -2,7 +2,11 @@ import express from "express";
 import db from "../models/index.js";
 import { authorizeRole } from "../middleware/roleMiddleware.js";
 import { paginate } from "../utils/paginationUtil.js";
-import { ADMIN, ROLES_LIST } from "../constants/constants.js";
+import {
+  ADMIN,
+  ROLES_LIST,
+  INTERNAL_SERVER_ERROR,
+} from "../constants/constants.js";
 
 const router = express.Router();
 
@@ -25,7 +29,7 @@ router.get("/", authorizeRole([ADMIN]), async (req, res) => {
       users,
     });
   } catch (error) {
-    res.status(500).json({ message: "Internal Server Error." });
+    res.status(500).json({ message: INTERNAL_SERVER_ERROR });
   }
 });
 
@@ -44,7 +48,7 @@ router.get("/:id", async (req, res) => {
 
     res.status(200).json(existingUser);
   } catch (error) {
-    res.status(500).json({ message: "Internal Server Error." });
+    res.status(500).json({ message: INTERNAL_SERVER_ERROR });
   }
 });
 
@@ -77,7 +81,7 @@ router.patch("/:id/role", authorizeRole([ADMIN]), async (req, res) => {
 
     res.status(200).json({ message: "Role updated successfully.", user });
   } catch (error) {
-    res.status(500).json({ message: "Internal Server Error." });
+    res.status(500).json({ message: INTERNAL_SERVER_ERROR });
   }
 });
 
@@ -98,7 +102,7 @@ router.delete("/:id", authorizeRole([ADMIN]), async (req, res) => {
     await user.destroy();
     res.status(204).end();
   } catch (error) {
-    res.status(500).json({ message: "Internal Server Error." });
+    res.status(500).json({ message: INTERNAL_SERVER_ERROR });
   }
 });
 

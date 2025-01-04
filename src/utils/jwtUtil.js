@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import { INTERNAL_SERVER_ERROR } from "../constants/constants.js";
 
 const handleJWTVerification = (token, secret) => {
   try {
@@ -15,7 +16,7 @@ const handleJWTVerification = (token, secret) => {
         err.status = 401;
         break;
       default:
-        err.message = "Internal server error.";
+        err.message = INTERNAL_SERVER_ERROR;
         err.status = 500;
     }
     throw err;

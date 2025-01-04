@@ -1,5 +1,6 @@
 import { verifyAccessToken } from "../utils/jwtUtil.js";
 import { userExistsInDb } from "../utils/userExistsInDbUtil.js";
+import { INTERNAL_SERVER_ERROR } from "../constants/constants.js";
 
 export const authenticate = async (req, res, next) => {
   try {
@@ -42,6 +43,6 @@ export const authenticate = async (req, res, next) => {
     req.user = decoded;
     next();
   } catch (error) {
-    return res.status(500).json({ message: "Internal Server Error." });
+    return res.status(500).json({ message: INTERNAL_SERVER_ERROR });
   }
 };
