@@ -11,7 +11,13 @@ export const authenticate = async (req, res, next) => {
     }
 
     const token = authHeader.split(" ")[1];
-    const decoded = verifyAccessToken(token);
+
+    let decoded;
+    try {
+      decoded = verifyAccessToken(token);
+    } catch (err) {
+      return res.status(err.status).json({ message: err.message }); // err is thrown in handleJWTVerification -> verifyAccessToken
+    }
 
     const userIdInToken = decoded.userId;
     const userExists = await userExistsInDb({ id: userIdInToken });
@@ -36,6 +42,6 @@ export const authenticate = async (req, res, next) => {
     req.user = decoded;
     next();
   } catch (error) {
-    return res.status(401).json({ message: "Unauthorized." });
+    return res.status(500).json({ message: "Internal Server Error." });
   }
 };
