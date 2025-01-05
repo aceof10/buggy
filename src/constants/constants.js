@@ -70,6 +70,8 @@ export const PRIORITY_LIST = [LOW, MEDIUM, HIGH];
 export const UNAUTHORIZED = "Unauthorized access. Please log in to continue.";
 export const FORBIDDEN = "You are not permitted to perform this action.";
 
+export const INVALID_CREDENTIALS = "Invalid credentials.";
+
 // Token errors
 export const HEADER_MALFORMED = "Malformed authorization header.";
 export const TOKEN_EXPIRED = "Session expired. Please log in to continue.";
@@ -102,4 +104,5 @@ export const INVALID_PROJECT_STATUS = "Invalid project status provided.";
 // Bug errors
 export const BUG_NOT_FOUND = "Bug not found.";
 export const INVALID_BUG_STATUS = "Invalid bug status provided.";
+export const INVALID_BUG_PRIORITY = "Invalid bug priority provided.";
 /* END */
