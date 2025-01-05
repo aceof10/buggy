@@ -6,6 +6,8 @@ import {
   ADMIN,
   ROLES_LIST,
   INTERNAL_SERVER_ERROR,
+  USER_NOT_FOUND,
+  INVALID_ROLE,
 } from "../constants/constants.js";
 
 const router = express.Router();
@@ -43,7 +45,7 @@ router.get("/:id", async (req, res) => {
   try {
     const existingUser = await db.User.findByPk(id);
     if (!existingUser) {
-      return res.status(404).json({ message: "User not found." });
+      return res.status(404).json({ message: USER_NOT_FOUND });
     }
 
     res.status(200).json(existingUser);
@@ -62,14 +64,14 @@ router.patch("/:id/role", authorizeRole([ADMIN]), async (req, res) => {
   const { role } = req.body;
 
   if (!ROLES_LIST.includes(role)) {
-    return res.status(400).json({ message: "Invalid role specified." });
+    return res.status(400).json({ message: INVALID_ROLE });
   }
 
   try {
     const user = await db.User.findByPk(id);
 
     if (!user) {
-      return res.status(404).json({ message: "User not found." });
+      return res.status(404).json({ message: USER_NOT_FOUND });
     }
 
     if (user.role === role) {
@@ -96,7 +98,7 @@ router.delete("/:id", authorizeRole([ADMIN]), async (req, res) => {
     const user = await db.User.findByPk(id);
 
     if (!user) {
-      return res.status(404).json({ message: "User not found." });
+      return res.status(404).json({ message: USER_NOT_FOUND });
     }
 
     await user.destroy();
@@ -124,7 +126,7 @@ router.get("/:id/projects", authorizeRole([ADMIN]), async (req, res) => {
     });
 
     if (!user) {
-      return res.status(404).json({ message: "User not found." });
+      return res.status(404).json({ message: USER_NOT_FOUND });
     }
 
     res.status(200).json(user.projects);
@@ -151,7 +153,7 @@ router.get("/:id/bugs", authorizeRole([ADMIN]), async (req, res) => {
     });
 
     if (!user) {
-      return res.status(404).json({ message: "User not found." });
+      return res.status(404).json({ message: USER_NOT_FOUND });
     }
 
     res.status(200).json(user.bugs);

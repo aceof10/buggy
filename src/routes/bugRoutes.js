@@ -9,6 +9,11 @@ import {
   PRIORITY_LIST,
   ROLES_AUTHORIZED_FOR_PROJECT_ASSIGNMENT,
   INTERNAL_SERVER_ERROR,
+  PROJECT_NOT_FOUND,
+  BUG_NOT_FOUND,
+  INVALID_BUG_STATUS,
+  INVALID_BUG_PRIORITY,
+  USER_NOT_FOUND,
 } from "../constants/constants.js";
 import sanitizeInput from "../utils/sanitizeInput.js";
 
@@ -28,12 +33,12 @@ router.post(
       description = sanitizeInput(description);
 
       if (!PRIORITY_LIST.includes(priority)) {
-        return res.status(400).json({ message: "Invalid priority specified." });
+        return res.status(400).json({ message: INVALID_BUG_PRIORITY });
       }
 
       const project = await db.Project.findByPk(projectId);
       if (!project) {
-        return res.status(404).json({ message: "Project not found." });
+        return res.status(404).json({ message: PROJECT_NOT_FOUND });
       }
 
       const bug = await db.Bug.create({
@@ -75,7 +80,7 @@ router.get(
 
       const bug = await db.Bug.findOne({ where: { id } });
       if (!bug) {
-        return res.status(404).json({ message: "Bug not found." });
+        return res.status(404).json({ message: BUG_NOT_FOUND });
       }
 
       res.status(200).json(bug);
@@ -100,22 +105,22 @@ router.put(
       description = sanitizeInput(description);
 
       if (!BUG_STATUS_LIST.includes(status)) {
-        return res.status(400).json({ message: "Invalid status specified." });
+        return res.status(400).json({ message: INVALID_BUG_STATUS });
       }
 
       if (!PRIORITY_LIST.includes(priority)) {
-        return res.status(400).json({ message: "Invalid priority specified." });
+        return res.status(400).json({ message: INVALID_BUG_PRIORITY });
       }
 
       const project = await db.Project.findByPk(projectId);
       if (!project) {
-        return res.status(404).json({ message: "Project not found." });
+        return res.status(404).json({ message: PROJECT_NOT_FOUND });
       }
 
       const bug = await db.Bug.findByPk(id);
 
       if (!bug) {
-        return res.status(404).json({ message: "Bug not found" });
+        return res.status(404).json({ message: BUG_NOT_FOUND });
       }
 
       await bug.update({ title, description, status, priority, projectId });
@@ -137,7 +142,7 @@ router.delete("/:id", authorizeRole([ADMIN]), async (req, res) => {
 
     const bug = await db.Bug.findByPk(id);
     if (!bug) {
-      return res.status(404).json({ message: "Bug not found." });
+      return res.status(404).json({ message: BUG_NOT_FOUND });
     }
 
     await bug.destroy();
@@ -163,12 +168,12 @@ router.post("/:id/add-user", authorizeRole([ADMIN]), async (req, res) => {
 
     const bug = await db.Bug.findOne({ where: { id } });
     if (!bug) {
-      return res.status(404).json({ message: "Bug not found." });
+      return res.status(404).json({ message: BUG_NOT_FOUND });
     }
 
     const user = await db.User.findOne({ where: { id: userId } });
     if (!user) {
-      return res.status(404).json({ message: "User not found." });
+      return res.status(404).json({ message: USER_NOT_FOUND });
     }
 
     const userRole = user.role;
@@ -216,12 +221,12 @@ router.delete("/:id/remove-user", authorizeRole([ADMIN]), async (req, res) => {
 
     const bug = await db.Bug.findOne({ where: { id } });
     if (!bug) {
-      return res.status(404).json({ message: "Bug not found." });
+      return res.status(404).json({ message: BUG_NOT_FOUND });
     }
 
     const user = await db.User.findOne({ where: { id: userId } });
     if (!user) {
-      return res.status(404).json({ message: "User not found." });
+      return res.status(404).json({ message: USER_NOT_FOUND });
     }
 
     const userBugAssociation = await db.UserBugAssociation.findOne({
@@ -262,7 +267,7 @@ router.get(
       });
 
       if (!bug) {
-        return res.status(404).json({ message: "Bug not found." });
+        return res.status(404).json({ message: BUG_NOT_FOUND });
       }
 
       res.status(200).json(bug.users);

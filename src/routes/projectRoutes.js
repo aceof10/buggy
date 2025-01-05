@@ -6,6 +6,8 @@ import {
   DEVELOPER,
   TESTER,
   ROLES_AUTHORIZED_FOR_PROJECT_ASSIGNMENT,
+  PROJECT_NOT_FOUND,
+  USER_NOT_FOUND,
 } from "../constants/constants.js";
 
 const router = express.Router();
@@ -56,7 +58,7 @@ router.get(
 
       const project = await db.Project.findOne({ where: { id } });
       if (!project) {
-        return res.status(404).json({ message: "Project not found." });
+        return res.status(404).json({ message: PROJECT_NOT_FOUND });
       }
 
       res.status(200).json(project);
@@ -77,7 +79,7 @@ router.put("/:id", authorizeRole([ADMIN]), async (req, res) => {
 
     const project = await db.Project.findOne({ where: { id } });
     if (!project) {
-      return res.status(404).json({ message: "Project not found." });
+      return res.status(404).json({ message: PROJECT_NOT_FOUND });
     }
 
     await project.update({ name, description, status });
@@ -98,7 +100,7 @@ router.delete("/:id", authorizeRole([ADMIN]), async (req, res) => {
 
     const project = await db.Project.findOne({ where: { id } });
     if (!project) {
-      return res.status(404).json({ message: "Project not found." });
+      return res.status(404).json({ message: PROJECT_NOT_FOUND });
     }
 
     await project.destroy();
@@ -126,11 +128,11 @@ router.post("/:id/add-user", authorizeRole([ADMIN]), async (req, res) => {
     const user = await db.User.findOne({ where: { id: userId } });
 
     if (!project) {
-      return res.status(404).json({ message: "Project not found." });
+      return res.status(404).json({ message: PROJECT_NOT_FOUND });
     }
 
     if (!user) {
-      return res.status(404).json({ message: "User not found." });
+      return res.status(404).json({ message: USER_NOT_FOUND });
     }
 
     const userRole = user.role;
@@ -180,11 +182,11 @@ router.delete("/:id/remove-user", authorizeRole([ADMIN]), async (req, res) => {
     const user = await db.User.findOne({ where: { id: userId } });
 
     if (!project) {
-      return res.status(404).json({ message: "Project not found." });
+      return res.status(404).json({ message: PROJECT_NOT_FOUND });
     }
 
     if (!user) {
-      return res.status(404).json({ message: "User not found." });
+      return res.status(404).json({ message: USER_NOT_FOUND });
     }
 
     const userProjectAssociation = await db.UserProjectAssociation.findOne({
@@ -224,7 +226,7 @@ router.get("/:id/users", authorizeRole([ADMIN]), async (req, res) => {
     });
 
     if (!project) {
-      return res.status(404).json({ message: "Project not found." });
+      return res.status(404).json({ message: PROJECT_NOT_FOUND });
     }
 
     res.status(200).json(project.users);

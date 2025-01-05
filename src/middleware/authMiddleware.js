@@ -1,14 +1,16 @@
 import { verifyAccessToken } from "../utils/jwtUtil.js";
 import { userExistsInDb } from "../utils/userExistsInDbUtil.js";
-import { INTERNAL_SERVER_ERROR } from "../constants/constants.js";
+import {
+  HEADER_MALFORMED,
+  UNAUTHORIZED,
+  INTERNAL_SERVER_ERROR,
+} from "../constants/constants.js";
 
 export const authenticate = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader?.startsWith("Bearer ")) {
-      return res
-        .status(401)
-        .json({ message: "Malformed authorization header." });
+      return res.status(401).json({ message: HEADER_MALFORMED });
     }
 
     const token = authHeader.split(" ")[1];
@@ -37,7 +39,7 @@ export const authenticate = async (req, res, next) => {
       - Trigger alerts to investigate possible key leaks
       */
 
-      return res.status(401).json({ message: "Unauthorized." });
+      return res.status(401).json({ message: UNAUTHORIZED });
     }
 
     req.user = decoded;

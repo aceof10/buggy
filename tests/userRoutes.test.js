@@ -2,6 +2,11 @@ import request from "supertest";
 import { expect } from "chai";
 import app from "../src/app.js";
 import db from "../src/models/index.js";
+import {
+  FORBIDDEN,
+  INVALID_ROLE,
+  USER_NOT_FOUND,
+} from "../src/constants/constants.js";
 
 describe("/user routes tests", () => {
   let adminAccessToken;
@@ -104,7 +109,7 @@ describe("/user routes tests", () => {
         .set("Authorization", `Bearer ${user1AccessToken}`);
 
       expect(res.status).to.equal(403);
-      expect(res.body.message).to.equal("Access denied.");
+      expect(res.body.message).to.equal(FORBIDDEN);
     });
   });
 
@@ -129,7 +134,7 @@ describe("/user routes tests", () => {
         .set("Authorization", `Bearer ${user1AccessToken}`);
 
       expect(res.status).to.equal(404);
-      expect(res.body.message).to.equal("User not found.");
+      expect(res.body.message).to.equal(USER_NOT_FOUND);
     });
   });
 
@@ -155,7 +160,7 @@ describe("/user routes tests", () => {
         .send({ role: "admin" });
 
       expect(res.status).to.equal(403);
-      expect(res.body.message).to.equal("Access denied.");
+      expect(res.body.message).to.equal(FORBIDDEN);
     });
 
     it("should return 400 for an invalid role", async () => {
@@ -165,7 +170,7 @@ describe("/user routes tests", () => {
         .send({ role: "invalidRole" });
 
       expect(res.status).to.equal(400);
-      expect(res.body.message).to.equal("Invalid role specified.");
+      expect(res.body.message).to.equal(INVALID_ROLE);
     });
   });
 
@@ -189,7 +194,7 @@ describe("/user routes tests", () => {
         .set("Authorization", `Bearer ${user1AccessToken}`);
 
       expect(res.status).to.equal(403);
-      expect(res.body.message).to.equal("Access denied.");
+      expect(res.body.message).to.equal(FORBIDDEN);
     });
   });
 
@@ -213,7 +218,7 @@ describe("/user routes tests", () => {
         .set("Authorization", `Bearer ${user1AccessToken}`);
 
       expect(res.status).to.equal(403);
-      expect(res.body.message).to.equal("Access denied.");
+      expect(res.body.message).to.equal(FORBIDDEN);
     });
   });
 
@@ -236,7 +241,7 @@ describe("/user routes tests", () => {
         .set("Authorization", `Bearer ${user1AccessToken}`);
 
       expect(res.status).to.equal(403);
-      expect(res.body.message).to.equal("Access denied.");
+      expect(res.body.message).to.equal(FORBIDDEN);
     });
 
     it("should return 404 if user not found", async () => {
@@ -245,7 +250,7 @@ describe("/user routes tests", () => {
         .set("Authorization", `Bearer ${adminAccessToken}`);
 
       expect(res.status).to.equal(404);
-      expect(res.body.message).to.equal("User not found.");
+      expect(res.body.message).to.equal(USER_NOT_FOUND);
     });
   });
 });
