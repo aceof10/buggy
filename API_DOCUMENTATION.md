@@ -2,7 +2,109 @@
 
 ## Auth Routes
 
-\*To be updated
+### 1. POST /auth/signup
+
+**Description:** Registers a new user.
+
+**Access:** Public.
+
+**Response:**
+
+- **201 Created:** User registered successfully.
+- **500 : Internal Server Error**
+
+#### cURL Command:
+
+```bash
+curl -X POST "http://localhost:3000/auth/signup" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "test@example.com",
+    "password": "password123"
+  }' | jq
+
+```
+
+---
+
+### 2. POST /auth/login
+
+**Description:** Logs in a user and returns a JWT access token.
+
+**Access:** Public.
+
+**Response:**
+
+- **200 OK:** Login successful.
+- **401 Unauthorized:** Invalid email or password.
+
+#### cURL Command:
+
+```bash
+curl -X POST "http://localhost:3000/auth/login" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "test@example.com",
+    "password": "password123"
+  }' --cookie-jar cookies.txt | jq
+```
+
+- Saves cookie in cookies.txt file.
+- Copy the returned accessToken and save in environment variable `ACCESS_TOKEN`:
+
+```bash
+export ACCESS_TOKEN=<copied_access_token>
+```
+
+---
+
+### 3. POST /auth/refresh-token
+
+**Description:** Generates a new access token using a refresh token.
+
+**Access:** Authenticated.
+
+**Response:**
+
+- **200 OK:** Access token refreshed successfully.
+- **401 Unauthorized:** Invalid or expired refresh token.
+
+#### cURL Command:
+
+```bash
+curl -X POST "http://localhost:3000/auth/refresh-token" \
+  -H "Content-Type: application/json" \
+  --cookie cookies.txt | jq
+
+```
+
+- Copy the returned accessToken and save in environment variable `ACCESS_TOKEN`:
+
+```bash
+export ACCESS_TOKEN=<copied_access_token>
+```
+
+---
+
+### 4. POST /auth/logout
+
+**Description:** Logs out a user by invalidating the refresh token.
+
+**Access:** Authenticated.
+
+**Response:**
+
+- **200 OK:** Logout successful.
+
+#### cURL Command:
+
+```bash
+curl -X POST "http://localhost:3000/auth/logout" \
+  -H "Authorization: Bearer $ACCESS_TOKEN" \
+  -H "Host: localhost:3000" | jq
+```
+
+---
 
 ## User Routes
 
@@ -135,6 +237,172 @@ curl -X GET "http://localhost:3000/users/$USER_ID/projects" \
 curl -X GET "http://localhost:3000/users/$USER_ID/bugs" \
   -H "Authorization: Bearer $ACCESS_TOKEN" \
   -H "Host: localhost:3000" | jq
+```
+
+---
+
+## Project Routes
+
+### 1. GET /projects
+
+**Description:** Retrieves a list of all projects.
+
+**Access:** Authenticated users.
+
+**Response:**
+
+- **200 OK:** Returns a list of projects.
+- **401 Unauthorized:** If the user is not authenticated.
+
+#### cURL Command:
+
+```bash
+curl -X GET "http://localhost:3000/projects" \
+  -H "Authorization: Bearer $ACCESS_TOKEN" \
+  -H "Host: localhost:3000" | jq
+```
+
+---
+
+### 2. POST /projects
+
+**Description:** Creates a new project.
+
+**Access:** Admins only.
+
+**Response:**
+
+- **201 Created:** Project created successfully.
+- **403 Forbidden:** If a non-admin attempts to create a project.
+
+#### cURL Command:
+
+```bash
+curl -X POST "http://localhost:3000/projects" \
+ -H "Authorization: Bearer $ACCESS_TOKEN" \
+ -H "Content-Type: application/json" \
+ -d '{
+"name": "Project Name",
+"description": "Project Description"
+}' | jq
+```
+
+---
+
+### 3. GET /projects/:id
+
+**Description:** Retrieves a project by ID.
+
+**Access:** Authenticated users.
+
+**Response:**
+
+- **200 OK:** Returns the project details.
+- **404 Not Found:** If the project is not found.
+
+#### cURL Command:
+
+```bash
+curl -X GET "http://localhost:3000/projects/$PROJECT_ID" \
+ -H "Authorization: Bearer $ACCESS_TOKEN" \
+ -H "Host: localhost:3000" | jq
+```
+
+---
+
+## Bug Routes
+
+### 1. GET /bugs
+
+**Description:** Retrieves a list of all bugs.
+
+**Access:** Authenticated users.
+
+**Response:**
+
+- **200 OK:** Returns a list of bugs.
+- **401 Unauthorized:** If the user is not authenticated.
+
+#### cURL Command:
+
+```bash
+curl -X GET "http://localhost:3000/bugs" \
+ -H "Authorization: Bearer $ACCESS_TOKEN" \
+ -H "Host: localhost:3000" | jq
+```
+
+---
+
+### 2. POST /bugs
+
+**Description:** Creates a new bug.
+
+**Access:** Authenticated users.
+
+**Response:**
+
+- **201 Created:** Bug created successfully.
+- **400 Bad Request:** If required fields are missing.
+
+#### cURL Command:
+
+```bash
+curl -X POST "http://localhost:3000/bugs" \
+ -H "Authorization: Bearer $ACCESS_TOKEN" \
+ -H "Content-Type: application/json" \
+ -d '{
+  "title": "Bug Title",
+  "description": "Bug Description",
+  "projectId": '$PROJECT_ID',
+  "priority": "low"
+}' | jq
+```
+
+---
+
+### 3. PUT /bugs/:id
+
+**Description:** Updates a bug
+
+**Access:** Authenticated users.
+
+**Response:**
+
+- **200 OK:** Bug updated successfully.
+- **404 Not Found:** If the bug is not found.
+
+#### cURL Command:
+
+```bash
+curl -X PUT "http://localhost:3000/bugs/$BUG_ID" \
+ -H "Authorization: Bearer $ACCESS_TOKEN" \
+ -H "Content-Type: application/json" \
+ -d '{
+  "title": "Bug Title",
+  "description": "Bug Description",
+  "status": "duplicate",
+  "priority": "low",
+  "projectId": '$PROJECT_ID'
+ }' | jq
+```
+
+### 4. DELETE /bugs/:id
+
+**Description:** Deletes a bug by ID.
+
+**Access:** Admins only.
+
+**Response:**
+
+- **200 OK:** Bug deleted successfully.
+- **403 Forbidden:** If a non-admin tries to delete a bug.
+
+#### cURL Command:
+
+```bash
+curl -X DELETE "http://localhost:3000/bugs/$BUG_ID" \
+ -H "Authorization: Bearer $ACCESS_TOKEN" \
+ -H "Host: localhost:3000" | jq
 ```
 
 ---
