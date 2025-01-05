@@ -1,6 +1,7 @@
 import request from "supertest";
 import { expect } from "chai";
 import app from "../src/app.js";
+import { INVALID_CREDENTIALS } from "../src/constants/constants.js";
 
 let accessToken, refreshToken;
 
@@ -46,11 +47,11 @@ describe("/auth routes tests", () => {
       expect(res.headers["set-cookie"][0]).to.contain("refresh_token");
     });
 
-    it("should return 400 for invalid credentials", async () => {
+    it("should return 401 for invalid credentials", async () => {
       const res = await loginResponse("test@example.com", "WrongPassword");
 
-      expect(res.status).to.equal(400);
-      expect(res.body).to.deep.equal({ message: "Invalid credentials." });
+      expect(res.status).to.equal(401);
+      expect(res.body).to.deep.equal({ message: INVALID_CREDENTIALS });
     });
   });
 
@@ -134,13 +135,13 @@ describe("/auth routes tests", () => {
       });
     });
 
-    it("should return 400 for incorrect old password", async () => {
+    it("should return 401 for incorrect old password", async () => {
       const res = await request(app)
         .post("/auth/change-password")
         .set("Authorization", `Bearer ${token}`)
         .send({ oldPassword: "WrongPassword", newPassword: "NewPassword123" });
 
-      expect(res.status).to.equal(400);
+      expect(res.status).to.equal(401);
       expect(res.body).to.deep.equal({ message: "Incorrect old password." });
     });
   });

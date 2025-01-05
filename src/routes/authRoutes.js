@@ -8,7 +8,10 @@ import {
   verifyRefreshToken,
 } from "../utils/jwtUtil.js";
 import { authenticate } from "../middleware/authMiddleware.js";
-import { INTERNAL_SERVER_ERROR } from "../constants/constants.js";
+import {
+  INTERNAL_SERVER_ERROR,
+  INVALID_CREDENTIALS,
+} from "../constants/constants.js";
 
 const router = express.Router();
 
@@ -43,7 +46,7 @@ router.post("/login", async (req, res) => {
 
     const existingUser = await db.User.findOne({ where: { email } });
     if (!existingUser) {
-      return res.status(400).json({ message: "Invalid credentials." });
+      return res.status(401).json({ message: INVALID_CREDENTIALS });
     }
 
     const isPasswordMatch = await comparePassword(
@@ -51,7 +54,7 @@ router.post("/login", async (req, res) => {
       existingUser.password
     );
     if (!isPasswordMatch) {
-      return res.status(400).json({ message: "Invalid credentials." });
+      return res.status(401).json({ message: INVALID_CREDENTIALS });
     }
 
     const accessToken = generateAccessToken(existingUser.id, existingUser.role);
@@ -77,7 +80,7 @@ router.post("/change-password", authenticate, async (req, res) => {
   try {
     const existingUser = await db.User.findByPk(userId);
     if (!existingUser) {
-      return res.status(404).json({ message: "User not found." });
+      return res.status(401).json({ message: INVALID_CREDENTIALS });
     }
 
     const isPasswordMatch = await comparePassword(
@@ -85,7 +88,7 @@ router.post("/change-password", authenticate, async (req, res) => {
       existingUser.password
     );
     if (!isPasswordMatch) {
-      return res.status(400).json({ message: "Incorrect old password." });
+      return res.status(401).json({ message: "Incorrect old password." });
     }
 
     const hashedPassword = await hashPassword(newPassword);
@@ -120,9 +123,7 @@ router.post("/refresh-token", async (req, res) => {
 
     const userInDb = await db.User.findByPk(decoded.userId);
     if (!userInDb) {
-      return res.status(401).json({
-        message: "User does not exist. Please sign up or contact support.",
-      });
+      return res.status(401).json({ message: INVALID_CREDENTIALS });
     }
 
     const accessToken = generateAccessToken(userInDb.id, userInDb.role);
