@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 
 import db from "./models/index.js";
 import { authenticate } from "./middleware/authMiddleware.js";
+import { initializeDefaultAdmin } from "./init/adminInit.js";
 
 import helloRoutes from "./routes/helloRoutes.js";
 import authRutes from "./routes/authRoutes.js";
@@ -37,9 +38,11 @@ app.use("/bugs", bugRoutes);
 
 db.sequelize
   .authenticate()
-  .then(() => {
+  .then(async () => {
     console.log("Database connected.");
-    return db.sequelize.sync();
+    await db.sequelize.sync();
+
+    await initializeDefaultAdmin(); // create default admin
   })
   .catch((err) => {
     console.log("Unable to connect to the database.");
